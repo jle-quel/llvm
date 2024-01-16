@@ -120,16 +120,19 @@ public:
   constexpr complex(value_type __re = value_type(), value_type __im = value_type());
 
   /// Converting constructor. Constructs the object from a complex number of a different type.
+  /// The expression inside explicit evaluates to false if and only if the floating-point conversion rank of T is greater than or equal to the floating-point conversion rank of X. (since C++23)
   template <typename X>
-  constexpr complex(const complex<X> &);
+  explicit(/* bool */) constexpr complex(const complex<X> &);
 
   /// Converting constructor. Constructs the object from a std::complex number.
+  /// The expression inside explicit evaluates to false if and only if the floating-point conversion rank of T is greater than or equal to the floating-point conversion rank of X. (since C++23)
   template <class X>
-  constexpr complex(const std::complex<X> &);
+  explicit(/* bool */) constexpr complex(const std::complex<X> &);
 
   /// Constructs a std::complex number from a sycl::complex.
+  /// The expression inside explicit evaluates to false if and only if the floating-point conversion rank of T is greater than or equal to the floating-point conversion rank of X. (since C++23)
   template <class X>
-  constexpr operator std::complex<X>() const;
+  explicit(/* bool */) constexpr operator std::complex<X>() const;
 
   /// Returns the real part.
   constexpr value_type real() const;
