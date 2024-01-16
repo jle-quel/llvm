@@ -187,6 +187,158 @@ void check_sycl_constructor_from_std() {
   }
 }
 
+// Check that a sycl::complex<T> can only be constructed from a sycl::complex<X>
+// if and only if the floating-point conversion rank of T is greater than or
+// equal to the floating-point conversion rank of X.
+void check_sycl_constructor() {
+  const auto fh =
+      [](const sycl::ext::oneapi::experimental::complex<sycl::half> &) {};
+  const auto ff = [](const sycl::ext::oneapi::experimental::complex<float> &) {
+  };
+  const auto fd = [](const sycl::ext::oneapi::experimental::complex<double> &) {
+  };
+
+  const sycl::half a = 42;
+  const auto sycl_h =
+      sycl::ext::oneapi::experimental::complex<sycl::half>{a, a};
+
+  const float b = 42;
+  const auto sycl_f = sycl::ext::oneapi::experimental::complex<float>{b, b};
+
+  const double c = 42;
+  const auto sycl_d = sycl::ext::oneapi::experimental::complex<double>{c, c};
+
+  static_assert(std::is_invocable_v<decltype(fh), decltype(sycl_h)>);
+  static_assert(!std::is_invocable_v<decltype(fh), decltype(sycl_f)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(fh),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  sycl_f))>);
+  static_assert(!std::is_invocable_v<decltype(fh), decltype(sycl_d)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(fh),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  sycl_d))>);
+
+  static_assert(std::is_invocable_v<decltype(ff), decltype(sycl_h)>);
+  static_assert(std::is_invocable_v<decltype(ff), decltype(sycl_f)>);
+  static_assert(!std::is_invocable_v<decltype(ff), decltype(sycl_d)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(ff),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  sycl_d))>);
+
+  static_assert(std::is_invocable_v<decltype(fd), decltype(sycl_h)>);
+  static_assert(std::is_invocable_v<decltype(fd), decltype(sycl_f)>);
+  static_assert(std::is_invocable_v<decltype(fd), decltype(sycl_d)>);
+}
+
+// Check that a sycl::complex<T> can only be constructed from a std::complex<X>
+// if and only if the floating-point conversion rank of T is greater than or
+// equal to the floating-point conversion rank of X.
+void check_std_constructor() {
+  const auto fh =
+      [](const sycl::ext::oneapi::experimental::complex<sycl::half> &) {};
+  const auto ff = [](const sycl::ext::oneapi::experimental::complex<float> &) {
+  };
+  const auto fd = [](const sycl::ext::oneapi::experimental::complex<double> &) {
+  };
+
+  const sycl::half a = 42;
+  const auto std_h = std::complex<sycl::half>{a, a};
+
+  const float b = 42;
+  const auto std_f = std::complex<float>{b, b};
+
+  const double c = 42;
+  const auto std_d = std::complex<double>{c, c};
+
+  static_assert(std::is_invocable_v<decltype(fh), decltype(std_h)>);
+  static_assert(!std::is_invocable_v<decltype(fh), decltype(std_f)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(fh),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  std_f))>);
+  static_assert(!std::is_invocable_v<decltype(fh), decltype(std_d)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(fh),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  std_d))>);
+
+  static_assert(std::is_invocable_v<decltype(ff), decltype(std_h)>);
+  static_assert(std::is_invocable_v<decltype(ff), decltype(std_f)>);
+  static_assert(!std::is_invocable_v<decltype(ff), decltype(std_d)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(ff),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  std_d))>);
+
+  static_assert(std::is_invocable_v<decltype(fd), decltype(std_h)>);
+  static_assert(std::is_invocable_v<decltype(fd), decltype(std_f)>);
+  static_assert(std::is_invocable_v<decltype(fd), decltype(std_d)>);
+}
+
+// Check that a std::complex<T> can only be casted from a sycl::complex<X>
+// if and only if the floating-point conversion rank of T is greater than or
+// equal to the floating-point conversion rank of X.
+void check_conversion() {
+  const auto fh = [](const std::complex<sycl::half> &) {};
+  const auto ff = [](const std::complex<float> &) {};
+  const auto fd = [](const std::complex<double> &) {};
+
+  const sycl::half a = 42;
+  const auto sycl_h =
+      sycl::ext::oneapi::experimental::complex<sycl::half>{a, a};
+
+  const float b = 42;
+  const auto sycl_f = sycl::ext::oneapi::experimental::complex<float>{b, b};
+
+  const double c = 42;
+  const auto sycl_d = sycl::ext::oneapi::experimental::complex<double>{c, c};
+
+  static_assert(std::is_invocable_v<decltype(fh), decltype(sycl_h)>);
+  static_assert(!std::is_invocable_v<decltype(fh), decltype(sycl_f)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(fh),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  sycl_f))>);
+  static_assert(!std::is_invocable_v<decltype(fh), decltype(sycl_d)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(fh),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  sycl_d))>);
+
+  static_assert(std::is_invocable_v<decltype(ff), decltype(sycl_h)>);
+  static_assert(std::is_invocable_v<decltype(ff), decltype(sycl_f)>);
+  static_assert(!std::is_invocable_v<decltype(ff), decltype(sycl_d)>);
+  static_assert(
+      std::is_invocable_v<
+          decltype(ff),
+          decltype(
+              static_cast<sycl::ext::oneapi::experimental::complex<sycl::half>>(
+                  sycl_d))>);
+
+  static_assert(std::is_invocable_v<decltype(fd), decltype(sycl_h)>);
+  static_assert(std::is_invocable_v<decltype(fd), decltype(sycl_f)>);
+  static_assert(std::is_invocable_v<decltype(fd), decltype(sycl_d)>);
+}
+
 int main() {
   check_math_function_types();
   check_math_operator_types();
@@ -195,6 +347,10 @@ int main() {
 
   check_std_to_sycl_conversion();
   check_sycl_constructor_from_std();
+
+  check_sycl_constructor();
+  check_std_constructor();
+  check_conversion();
 
   return 0;
 }
