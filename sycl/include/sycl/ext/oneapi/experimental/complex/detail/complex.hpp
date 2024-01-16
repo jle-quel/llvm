@@ -36,17 +36,21 @@ public:
       : __re_(__re), __im_(__im) {}
 
   template <typename _Xp>
-  _SYCL_EXT_CPLX_INLINE_VISIBILITY constexpr complex(const complex<_Xp> &__c)
+  _SYCL_EXT_CPLX_INLINE_VISIBILITY explicit(
+      !is_convertible<_Tp, _Xp>::value) constexpr complex(const complex<_Xp>
+                                                              &__c)
       : __re_(__c.real()), __im_(__c.imag()) {}
 
   template <class _Xp, typename = std::enable_if_t<is_genfloat<_Xp>::value>>
-  _SYCL_EXT_CPLX_INLINE_VISIBILITY constexpr complex(
-      const std::complex<_Xp> &__c)
+  _SYCL_EXT_CPLX_INLINE_VISIBILITY explicit(
+      !is_convertible<
+          _Tp, _Xp>::value) constexpr complex(const std::complex<_Xp> &__c)
       : __re_(static_cast<value_type>(__c.real())),
         __im_(static_cast<value_type>(__c.imag())) {}
 
   template <class _Xp, typename = std::enable_if_t<is_genfloat<_Xp>::value>>
-  _SYCL_EXT_CPLX_INLINE_VISIBILITY constexpr
+  _SYCL_EXT_CPLX_INLINE_VISIBILITY explicit(
+      !is_convertible<_Xp, _Tp>::value) constexpr
   operator std::complex<_Xp>() const {
     return std::complex<_Xp>(static_cast<_Xp>(__re_), static_cast<_Xp>(__im_));
   }

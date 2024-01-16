@@ -47,6 +47,10 @@ struct is_gencomplex
                                  std::is_same_v<_Tp, complex<float>> ||
                                  std::is_same_v<_Tp, complex<sycl::half>>> {};
 
+template <typename Lhs, typename Rhs>
+struct is_convertible
+    : std::integral_constant<bool, sizeof(Lhs) >= sizeof(Rhs)> {};
+
 ////////////////////////////////////////////////////////////////////////////////
 /// DEFINES
 ////////////////////////////////////////////////////////////////////////////////
